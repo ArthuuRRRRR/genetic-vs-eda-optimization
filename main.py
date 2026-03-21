@@ -10,6 +10,7 @@ from collections import defaultdict
 
 import gen_lm
 import generate_corpus
+from evaluation import fonction_objective
 
 
 #%%
