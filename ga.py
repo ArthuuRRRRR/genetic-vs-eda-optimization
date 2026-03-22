@@ -4,11 +4,12 @@ import random
 
 
 class ga:
-    def __init__(self, population_size, mutation_rate, trigram_model, dictionary_set, choice_indiv=2):
+    def __init__(self, population_size, mutation_rate, trigram_model, dictionary_set, choice_indiv=2, crossover_type='one_point'):
         self.population_size = population_size
         self.mutation_rate = mutation_rate
         self.trigram_model = trigram_model
         self.dictionary_set = dictionary_set
+        self.crossover_type = crossover_type
         self.population = init_population(population_size)
         self.choice_indiv = choice_indiv
     
@@ -22,7 +23,7 @@ class ga:
     def parent_selection(self, scores, nombre_prts):
         return [mot for mot, _ in scores[:nombre_prts]]
 
-    def crossover(self, parent1, parent2):
+    def crossover_one_point(self, parent1, parent2):
         if len(parent1) < 2 or len(parent2) < 2:
             return parent1, parent2
 
@@ -32,6 +33,32 @@ class ga:
         child1 = parent1[:stop1] + parent2[stop2:]
         child2 = parent2[:stop2] + parent1[stop1:]
         return child1, child2
+    
+    def crossover_uniform(self, parent1, parent2):
+        minim= min(len(parent1), len(parent2))
+        
+        child1 = []
+        child2 = []
+        for i in range(minim):
+            if random.random() < 0.5:
+                child1.append(parent1[i])
+                child2.append(parent2[i])
+            else:
+                child1.append(parent2[i])
+                child2.append(parent1[i])
+        
+        if len(parent1) > minim:
+            child1.extend(parent1[minim:])
+        if len(parent2) > minim:
+            child2.extend(parent2[minim:])
+        return ''.join(child1), ''.join(child2)
+    
+    def crossover(self, parent1, parent2):
+        if self.crossover_type == "uniform":
+            return self.crossover_uniform(parent1, parent2)
+        else:
+            return self.crossover_one_point(parent1, parent2)
+
 
     def mutation(self, word):
         if len(word) == 0:
