@@ -4,12 +4,13 @@ import random
 
 
 class ga:
-    def __init__(self, population_size, mutation_rate, trigram_model, dictionary_set):
+    def __init__(self, population_size, mutation_rate, trigram_model, dictionary_set, choice_indiv=2):
         self.population_size = population_size
         self.mutation_rate = mutation_rate
         self.trigram_model = trigram_model
         self.dictionary_set = dictionary_set
         self.population = init_population(population_size)
+        self.choice_indiv = choice_indiv
     
     def evaluate_population(self):
         results = []
@@ -45,8 +46,11 @@ class ga:
     def run(self):
         results = self.evaluate_population()
 
+        choice_indiv = [mot for mot, _ in results[:self.choice_indiv]]
+
+
         parents = self.parent_selection(results, self.population_size // 2)
-        new_population = parents.copy()
+        new_population = choice_indiv.copy()
 
         while len(new_population) < self.population_size:
             parent1, parent2 = random.sample(parents, 2)
@@ -57,7 +61,11 @@ class ga:
             new_population.append(child1)
             if len(new_population) < self.population_size:
                 new_population.append(child2)
-
+        
         self.population = new_population
 
-        return results[0]
+        best_word = results[0][0]
+        best_score = results[0][1]
+        moyenne_result = sum(score for _, score in results) / len(results)
+
+        return best_word, best_score, moyenne_result
