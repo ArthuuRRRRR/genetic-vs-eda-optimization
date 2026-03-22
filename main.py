@@ -12,7 +12,7 @@ import gen_lm
 import generate_corpus
 from evaluation import fonction_objective
 from population import init_population
-
+from ga import ga
 
 #%%
 # voici une brève démonstration de l'utilisation du code fourni
@@ -55,3 +55,10 @@ scores_population = sorted(scores_population, key=lambda x: x[1])
 print("\nTop 10 de la population initiale :")
 for mot, score in scores_population[:10]:
     print(f"{mot}: {score}")
+
+
+ga = ga( population_size=20,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set)
+
+for generation in range(10):
+    best_word, best_score = ga.run()
+    print(f"Generation num : {generation}: {best_word} -> {best_score}")
