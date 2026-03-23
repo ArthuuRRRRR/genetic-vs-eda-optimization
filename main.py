@@ -13,6 +13,7 @@ import generate_corpus
 from evaluation import fonction_objective
 from population import init_population
 from ga import ga
+from eda import eda
 
 #%%
 # voici une brève démonstration de l'utilisation du code fourni
