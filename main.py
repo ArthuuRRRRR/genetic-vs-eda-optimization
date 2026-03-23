@@ -53,13 +53,22 @@ for mot in population:
 
 scores_population = sorted(scores_population, key=lambda x: x[1])
 
+"""
 print("\nTop 10 de la population initiale :")
 for mot, score in scores_population[:10]:
-    print(f"{mot}: {score}")
+    print(f"{mot}: {score}")"""
 
 
 ga = ga( population_size=20,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set, choice_indiv=2, crossover_type='one_point')
 
-for generation in range(10):
-    best_word, best_score, moyenne_result = ga.run()
-    print(f"Generation {generation}: best = {best_word} -> {best_score} ET moyenne : {moyenne_result}")
+
+best_word, best_score = ga.run(nb_generations=50)
+
+
+
+eda = eda(population_size=100,mutation_rate=0.05,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
+
+best_word, best_score = eda.run(nb_generations=50,nombre_prts=20)
+
+print("Final best word :", best_word)
+print("Final best score :", best_score)

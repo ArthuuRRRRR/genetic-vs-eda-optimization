@@ -70,29 +70,48 @@ class ga:
             word = word[:index] + new_char + word[index + 1:]
         return word
     
-    def run(self):
-        results = self.evaluate_population()
+    def run(self, nb_generations):
+        best_word = None
+        best_score = float("inf")
 
-        choice_indiv = [mot for mot, _ in results[:self.choice_indiv]]
+        for generation in range(nb_generations):
+
+            results = self.evaluate_population()
+
+            current_word = results[0][0]
+            current_score = results[0][1]
+
+            if current_score < best_score:
+                best_word = current_word
+                best_score = current_score
+
+            moyenne_result = sum(score for _, score in results) / len(results)
+
+            print("Generation :", generation + 1)
+            print("Best word :", current_word)
+            print("Score :", current_score)
+            print("Average score :", moyenne_result)
 
 
-        parents = self.parent_selection(results, self.population_size // 2)
-        new_population = choice_indiv.copy()
+            best_words = [mot for mot, _ in results[:self.choice_indiv]]
 
-        while len(new_population) < self.population_size:
-            parent1, parent2 = random.sample(parents, 2)
-            child1, child2 = self.crossover(parent1, parent2)
-            child1 = self.mutation(child1)
-            child2 = self.mutation(child2)
+            parents = self.parent_selection(results, self.population_size // 2)
+            new_population = best_words.copy()
 
-            new_population.append(child1)
-            if len(new_population) < self.population_size:
-                new_population.append(child2)
-        
-        self.population = new_population
+            while len(new_population) < self.population_size:
+                parent1, parent2 = random.sample(parents, 2)
 
-        best_word = results[0][0]
-        best_score = results[0][1]
-        moyenne_result = sum(score for _, score in results) / len(results)
+                child1, child2 = self.crossover(parent1, parent2)
 
-        return best_word, best_score, moyenne_result
+                child1 = self.mutation(child1)
+                child2 = self.mutation(child2)
+
+                new_population.append(child1)
+
+                if len(new_population) < self.population_size:
+                    new_population.append(child2)
+
+            self.population = new_population
+
+        return best_word, best_score
+
