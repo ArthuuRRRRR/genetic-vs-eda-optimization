@@ -88,7 +88,7 @@ class eda:
 
     def run(self, nb_generations, nombre_prts):
 
-
+        history = []
         best_word = None
         best_score = float("inf")
 
@@ -100,14 +100,19 @@ class eda:
             if current_score < best_score:
                 best_word = current_word
                 best_score = current_score
+            
+            moyenne_result = sum(score for _, score in scores) / len(scores)
 
             print("Generation :", generation + 1)
             print("Best word :", current_word)
             print("Score :", current_score)
+            print("Average score :", moyenne_result)
 
             parents = self.parent_selection(scores, nombre_prts)
 
             distribution = self.distribution_estimation(parents)
             self.population = self.create_new_population(distribution, scores)
 
-        return best_word, best_score
+            history.append({"generation": generation,"best_word": current_word,"best_score": current_score,"average_score": moyenne_result})
+
+        return best_word, best_score, history

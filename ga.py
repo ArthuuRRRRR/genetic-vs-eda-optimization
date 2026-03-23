@@ -73,6 +73,7 @@ class ga:
     def run(self, nb_generations):
         best_word = None
         best_score = float("inf")
+        history = []
 
         for generation in range(nb_generations):
 
@@ -113,5 +114,7 @@ class ga:
 
             self.population = new_population
 
-        return best_word, best_score
+            history.append({"generation": generation,"best_word": current_word,"best_score": current_score,"average_score": moyenne_result})
+
+        return best_word, best_score, history
 

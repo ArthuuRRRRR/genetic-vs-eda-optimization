@@ -1,39 +1,52 @@
 from ga import ga
 from eda import eda
 
-
 import random
 import numpy as np
 
 
-def run_ga_simple(seed, n_generations, population_size, mutation_rate, trigram_model, dictionary_set):
+def run_ga_simple(seed,nb_generations,population_size,mutation_rate,trigram_model,dictionary_set,choice_indiv=2,crossover_type="one_point"):
     random.seed(seed)
     np.random.seed(seed)
 
-    model = ga(population_size=population_size,mutation_rate=mutation_rate,trigram_model=trigram_model,dictionary_set=dictionary_set)
+    ga_model = ga(population_size=population_size,mutation_rate=mutation_rate,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=choice_indiv,crossover_type=crossover_type)
 
-    history = []
+    result = ga_model.run(nb_generations)
 
-    for generation in range(n_generations):
-        best_word, best_score, avrg_score = model.run()
+    best_word, best_score, history = result
 
-        history.append({"nbr_generation": generation,"best_score": best_score,"avrg_score": avrg_score})
-
-    return history
+    return {"seed": seed,"best_word": best_word,"best_score": best_score,"history": history}
 
 
-def run_eda_simple(seed, n_generations, population_size, trigram_model, dictionary_set):
+def run_eda_simple(seed,nb_generations,nombre_prts,population_size,mutation_rate, trigram_model,dictionary_set,choice_indiv):
     random.seed(seed)
     np.random.seed(seed)
 
-    model = eda(population_size=population_size,trigram_model=trigram_model,dictionary_set=dictionary_set)
+    eda_model = eda(population_size=population_size,mutation_rate=mutation_rate,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=choice_indiv)
 
-    history = []
+    result = eda_model.run(nb_generations, nombre_prts)
 
-    for generation in range(n_generations):
-        best_word, best_score, avrg_score = model.run()
+    best_word, best_score, history = result
 
-        history.append({"nbr_generation": generation,"best_score": best_score,"avrg_score": avrg_score})
+    return {"seed": seed,"best_word": best_word,"best_score": best_score,"history": history}
 
-    return history
 
+
+def monte_carlo_ga(n_runs,nb_generations,population_size,mutation_rate,trigram_model,dictionary_set,choice_indiv=2,crossover_type="one_point"):
+    all_results = []
+
+    for seed in range(n_runs):
+        result = run_ga_simple(seed=seed,nb_generations=nb_generations,population_size=population_size,mutation_rate=mutation_rate,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=choice_indiv,crossover_type=crossover_type)
+        all_results.append(result)
+
+    return all_results
+
+
+def monte_carlo_eda(n_runs,nb_generations,nombre_prts,population_size,mutation_rate,trigram_model,dictionary_set, choice_indiv):
+    all_results = []
+
+    for seed in range(n_runs):
+        result = run_eda_simple(seed=seed,nb_generations=nb_generations,nombre_prts=nombre_prts,population_size=population_size,mutation_rate=mutation_rate,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=choice_indiv)
+        all_results.append(result)
+
+    return all_results
