@@ -4,14 +4,20 @@ import random
 
 
 class ga:
-    def __init__(self, population_size, mutation_rate, trigram_model, dictionary_set, choice_indiv=2, crossover_type='one_point'):
+    def __init__(self, population_size, mutation_rate_pm, trigram_model, dictionary_set, choice_indiv=2, crossover_type='one_point', min_length=4, max_length=16, crossover_rate_pc=0.8, reseed=2):
         self.population_size = population_size
-        self.mutation_rate = mutation_rate
+        self.mutation_rate_pm = mutation_rate_pm
         self.trigram_model = trigram_model
         self.dictionary_set = dictionary_set
         self.crossover_type = crossover_type
         self.population = init_population(population_size)
         self.choice_indiv = choice_indiv
+        self.alphabet = "abcdefghijklmnopqrstuvwxyz"
+        self.min_length = 4
+        self.max_length = 16
+
+        self.crossover_rate_pc = crossover_rate_pc
+        self.reseed = reseed
     
     def evaluate_population(self):
         results = []
@@ -59,16 +65,31 @@ class ga:
         else:
             return self.crossover_one_point(parent1, parent2)
 
-
     def mutation(self, word):
-        if len(word) == 0:
+        if random.random() >= self.mutation_rate_pm:
             return word
+        max_length = 16
+        min_length = 4
+        alphabet = "abcdefghijklmnopqrstuvwxyz"
 
-        if random.random() < self.mutation_rate:
-            index = random.randint(0, len(word) - 1)
-            new_char = random.choice("abcdefghijklmnopqrstuvwxyz")
-            word = word[:index] + new_char + word[index + 1:]
+        operation = random.choice(["replace", "insert", "delete"])
+
+        if operation == "replace" and len(word) > 0:
+            i = random.randint(0, len(word) - 1)
+            c = random.choice(self.alphabet)
+            return word[:i] + c + word[i+1:]
+
+        if operation == "insert" and len(word) < max_length:
+            i = random.randint(0, len(word))
+            c = random.choice(self.alphabet)
+            return word[:i] + c + word[i:]
+
+        if operation == "delete" and len(word) > self.min_length:
+            i = random.randint(0, len(word) - 1)
+            return word[:i] + word[i+1:]
+
         return word
+    
     
     def run(self, nb_generations):
         best_word = None
@@ -102,7 +123,10 @@ class ga:
             while len(new_population) < self.population_size:
                 parent1, parent2 = random.sample(parents, 2)
 
-                child1, child2 = self.crossover(parent1, parent2)
+                if random.random() < self.crossover_rate_pc:
+                    child1, child2 = self.crossover(parent1, parent2)
+                else:
+                    child1, child2 = parent1, parent2
 
                 child1 = self.mutation(child1)
                 child2 = self.mutation(child2)
@@ -112,6 +136,12 @@ class ga:
                 if len(new_population) < self.population_size:
                     new_population.append(child2)
 
+        
+            if self.reseed > 0:
+                for _ in range(min(self.reseed, len(new_population))):
+                    idx = random.randint(0, len(new_population) - 1)
+                    new_population[idx] = init_population(1)[0]
+            
             self.population = new_population
 
             history.append({"generation": generation,"best_word": current_word,"best_score": current_score,"average_score": moyenne_result})

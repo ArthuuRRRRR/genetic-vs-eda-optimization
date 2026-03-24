@@ -55,7 +55,7 @@ for mot in population:
 
 scores_population = sorted(scores_population, key=lambda x: x[1])
 
-results_ga = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="one_point")
+results_ga = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="one_point")
 
 print("\n--- Résultats finaux GA ---")
 for result in results_ga:
