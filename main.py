@@ -15,7 +15,7 @@ from population import init_population
 from ga import ga
 from eda import eda
 from run_monte_carlo import monte_carlo_ga, monte_carlo_eda, run_ga_simple, run_eda_simple
-from display_result import plot_convergence, plot_average_population, plot_boxplot
+from display_result import plot_convergence, plot_average_population, plot_boxplot, print_summary, print_best_runs, plot_sorted_final_scores
 
 #%%
 # voici une brève démonstration de l'utilisation du code fourni
@@ -57,18 +57,17 @@ scores_population = sorted(scores_population, key=lambda x: x[1])
 
 results_ga = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="one_point")
 
-print("\n--- Résultats finaux GA ---")
-for result in results_ga:
-    print("seed =", result["seed"],"| best_word =", result["best_word"],"| best_score =", result["best_score"])
-
 
 results_eda = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=10,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
-
-print("\n--- Résultats finaux EDA ---")
-for result in results_eda:
-    print("seed =", result["seed"],"| best_word =", result["best_word"],"| best_score =", result["best_score"])
 
 
 plot_convergence(results_ga, results_eda)
 plot_average_population(results_ga, results_eda)
 plot_boxplot(results_ga, results_eda)
+plot_sorted_final_scores(results_ga, results_eda)
+
+print_summary(results_ga, "GA")
+print_best_runs(results_ga, "GA")
+
+print_summary(results_eda, "EDA")
+print_best_runs(results_eda, "EDA")

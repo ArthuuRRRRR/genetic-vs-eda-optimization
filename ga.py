@@ -109,10 +109,10 @@ class ga:
 
             moyenne_result = sum(score for _, score in results) / len(results)
 
-            print("Generation :", generation + 1)
-            print("Best word :", current_word)
-            print("Score :", current_score)
-            print("Average score :", moyenne_result)
+            #print("Generation :", generation + 1)
+            #print("Best word :", current_word)
+            #print("Score :", current_score)
+            #print("Average score :", moyenne_result)
 
 
             best_words = [mot for mot, _ in results[:self.choice_indiv]]

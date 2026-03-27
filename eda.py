@@ -103,10 +103,10 @@ class eda:
             
             moyenne_result = sum(score for _, score in scores) / len(scores)
 
-            print("Generation :", generation + 1)
-            print("Best word :", current_word)
-            print("Score :", current_score)
-            print("Average score :", moyenne_result)
+            #print("Generation :", generation + 1)
+            #print("Best word :", current_word)
+            #print("Score :", current_score)
+            #print("Average score :", moyenne_result)
 
             parents = self.parent_selection(scores, nombre_prts)
 
