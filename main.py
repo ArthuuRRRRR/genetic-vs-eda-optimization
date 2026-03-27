@@ -40,14 +40,57 @@ for mot in mots:
 # %%
 
 # %%
+"""
 print("\nTest de la fonction objective :")
 for mot in mots:
     score = fonction_objective(trigram_model, mot, dictionary_set)
     print(f"{mot}: {score}")
-
+"""
 # %%
+
+
 population = init_population(20)
 
+print("Que voulez vous faire ?")
+print("1. Faire une comparaison entre GA et EDA")
+print("2. Faire une analyse sur GA")
+print("3. Faire une analyse sur EDA")
+choice = input("Entrez votre choix (1, 2 ou 3) : ")
+
+
+if choice == "1":
+    results_ga = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="one_point")
+    results_eda = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=10,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
+    
+    plot_convergence(results_ga, results_eda)
+    plot_average_population(results_ga, results_eda)
+    plot_boxplot(results_ga, results_eda)
+    plot_sorted_final_scores(results_ga, results_eda)
+    
+    print_summary(results_ga, "GA")
+    print_best_runs(results_ga, "GA")
+    
+    print_summary(results_eda, "EDA")
+    print_best_runs(results_eda, "EDA")
+
+elif choice == "2":
+        results_ga_1 = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="one_point")
+        results_ga_2 = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="uniform")
+    
+        plot_convergence(results_ga_1, results_ga_2)
+        plot_average_population(results_ga_1, results_ga_2)
+        plot_boxplot(results_ga_1, results_ga_2)
+        plot_sorted_final_scores(results_ga_1, results_ga_2)
+elif choice == "3":
+        results_eda_1 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=10,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
+        results_eda_2 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=20,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
+    
+        plot_convergence(results_eda_1, results_eda_2)
+        plot_average_population(results_eda_1, results_eda_2)
+        plot_boxplot(results_eda_1, results_eda_2)
+        plot_sorted_final_scores(results_eda_1, results_eda_2)
+
+"""
 scores_population = []
 for mot in population:
     score = fonction_objective(trigram_model, mot, dictionary_set)
@@ -70,4 +113,4 @@ print_summary(results_ga, "GA")
 print_best_runs(results_ga, "GA")
 
 print_summary(results_eda, "EDA")
-print_best_runs(results_eda, "EDA")
+print_best_runs(results_eda, "EDA")"""
