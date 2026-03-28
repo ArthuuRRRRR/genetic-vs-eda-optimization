@@ -4,7 +4,7 @@ import random
 
 
 class ga:
-    def __init__(self, population_size, mutation_rate_pm, trigram_model, dictionary_set, choice_indiv=2, crossover_type='one_point', min_length=4, max_length=16, crossover_rate_pc=0.8, reseed=2):
+    def __init__(self,population_size,mutation_rate_pm,trigram_model,dictionary_set,choice_indiv=2,crossover_type='one_point',min_length=4,max_length=16,crossover_rate_pc=0.8,reseed=2,elitisme=2,etalon=False,losers=0):
         self.population_size = population_size
         self.mutation_rate_pm = mutation_rate_pm
         self.trigram_model = trigram_model
@@ -13,11 +13,15 @@ class ga:
         self.population = init_population(population_size)
         self.choice_indiv = choice_indiv
         self.alphabet = "abcdefghijklmnopqrstuvwxyz"
-        self.min_length = 4
-        self.max_length = 16
+        self.min_length = min_length
+        self.max_length = max_length
 
         self.crossover_rate_pc = crossover_rate_pc
         self.reseed = reseed
+
+        self.elitisme = elitisme
+        self.etalon = etalon
+        self.losers = losers
     
     def evaluate_population(self):
         results = []
@@ -41,7 +45,7 @@ class ga:
         return child1, child2
     
     def crossover_uniform(self, parent1, parent2):
-        minim= min(len(parent1), len(parent2))
+        minim = min(len(parent1), len(parent2))
         
         child1 = []
         child2 = []
@@ -68,9 +72,6 @@ class ga:
     def mutation(self, word):
         if random.random() >= self.mutation_rate_pm:
             return word
-        max_length = 16
-        min_length = 4
-        alphabet = "abcdefghijklmnopqrstuvwxyz"
 
         operation = random.choice(["replace", "insert", "delete"])
 
@@ -79,7 +80,7 @@ class ga:
             c = random.choice(self.alphabet)
             return word[:i] + c + word[i+1:]
 
-        if operation == "insert" and len(word) < max_length:
+        if operation == "insert" and len(word) < self.max_length:
             i = random.randint(0, len(word))
             c = random.choice(self.alphabet)
             return word[:i] + c + word[i:]
@@ -90,14 +91,12 @@ class ga:
 
         return word
     
-    
     def run(self, nb_generations):
         best_word = None
         best_score = float("inf")
         history = []
 
         for generation in range(nb_generations):
-
             results = self.evaluate_population()
 
             current_word = results[0][0]
@@ -109,19 +108,26 @@ class ga:
 
             moyenne_result = sum(score for _, score in results) / len(results)
 
-            #print("Generation :", generation + 1)
-            #print("Best word :", current_word)
-            #print("Score :", current_score)
-            #print("Average score :", moyenne_result)
-
-
-            best_words = [mot for mot, _ in results[:self.choice_indiv]]
-
-            parents = self.parent_selection(results, self.population_size // 2)
+            best_words = [mot for mot, _ in results[:self.elitisme]]
             new_population = best_words.copy()
 
+            if self.losers > 0:
+                worst_words = [mot for mot, _ in results[-self.losers:]]
+                new_population.extend(worst_words)
+
+            nombre_parents = max(2, self.population_size // 2)
+            parents = self.parent_selection(results, nombre_parents)
+
+            if self.etalon:
+                stallion = results[0][0]
+
             while len(new_population) < self.population_size:
-                parent1, parent2 = random.sample(parents, 2)
+
+                if self.etalon and random.random() < 0.5:
+                    parent1 = stallion
+                    parent2 = random.choice(parents)
+                else:
+                    parent1, parent2 = random.sample(parents, 2)
 
                 if random.random() < self.crossover_rate_pc:
                     child1, child2 = self.crossover(parent1, parent2)
@@ -136,15 +142,17 @@ class ga:
                 if len(new_population) < self.population_size:
                     new_population.append(child2)
 
-        
             if self.reseed > 0:
                 for _ in range(min(self.reseed, len(new_population))):
-                    idx = random.randint(0, len(new_population) - 1)
+                    if len(new_population) > self.elitisme:
+                        idx = random.randint(self.elitisme, len(new_population) - 1)
+                    else:
+                        idx = random.randint(0, len(new_population) - 1)
+
                     new_population[idx] = init_population(1)[0]
             
-            self.population = new_population
+            self.population = new_population[:self.population_size]
 
-            history.append({"generation": generation,"best_word": current_word,"best_score": current_score,"average_score": moyenne_result})
+            history.append({"generation": generation,"best_word": current_word,"best_score": current_score,"average_score": moyenne_result,"diversity": len(set(self.population))})
 
         return best_word, best_score, history
-

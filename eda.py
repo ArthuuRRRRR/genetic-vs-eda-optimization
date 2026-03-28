@@ -33,25 +33,53 @@ class eda:
         if len(parents) == 0:
             return distribution
 
-        taille_mot = min(len(mot) for mot in parents)
+        taille_mot = max(len(mot) for mot in parents)
 
         for i in range(taille_mot):
             compt = {}
 
             for letter in self.alphabet:
-                compt[letter] = 0
+                compt[letter] = 1
+
+            total = len(self.alphabet)
 
             for mot in parents:
-                letter = mot[i]
-                compt[letter] += 1
+                if i < len(mot):
+                    letter = mot[i]
+                    compt[letter] += 1
+                    total += 1
 
             proba = {}
             for letter in self.alphabet:
-                proba[letter] = compt[letter] / len(parents)
+                proba[letter] = compt[letter] / total
 
             distribution.append(proba)
 
         return distribution
+    
+    def estimate_length_distribution(self, parents):
+        length_count = {}
+
+        for mot in parents:
+            longueur = len(mot)
+            if longueur not in length_count:
+                length_count[longueur] = 0
+            length_count[longueur] += 1
+
+        total = len(parents)
+        length_proba = {}
+
+        for longueur in length_count:
+            length_proba[longueur] = length_count[longueur] / total
+
+        return length_proba
+    
+    def choose_length(self, length_proba):
+        longueurs = list(length_proba.keys())
+        probs = list(length_proba.values())
+
+        longueur = random.choices(longueurs, weights=probs, k=1)[0]
+        return longueur
     
     def choose_letter(self, probabilites_position):
         lettres = list(probabilites_position.keys())
@@ -60,11 +88,14 @@ class eda:
         lettre = random.choices(lettres, weights=probs, k=1)[0]
         return lettre
 
-    def create_word(self, distribution):
+    def create_word(self, distribution, longueur):
         mot_temp = ""
 
-        for probabilites_position in distribution:
-            letter = self.choose_letter(probabilites_position)
+        for i in range(longueur):
+            if i < len(distribution):
+                letter = self.choose_letter(distribution[i])
+            else:
+                letter = random.choice(self.alphabet)
 
             if random.random() < self.mutation_rate:
                 letter = random.choice(self.alphabet)
@@ -73,7 +104,7 @@ class eda:
 
         return mot_temp
     
-    def create_new_population(self, distribution, scores):
+    def create_new_population(self, distribution, scores, length_proba):
         new_population = []
 
         best_words = [mot for mot, _ in scores[:self.choice_indiv]]
@@ -81,7 +112,8 @@ class eda:
             new_population.append(word)
 
         while len(new_population) < self.population_size:
-            new_word = self.create_word(distribution)
+            longueur = self.choose_length(length_proba)
+            new_word = self.create_word(distribution, longueur)
             new_population.append(new_word)
 
         return new_population
@@ -103,16 +135,13 @@ class eda:
             
             moyenne_result = sum(score for _, score in scores) / len(scores)
 
-            #print("Generation :", generation + 1)
-            #print("Best word :", current_word)
-            #print("Score :", current_score)
-            #print("Average score :", moyenne_result)
-
             parents = self.parent_selection(scores, nombre_prts)
 
             distribution = self.distribution_estimation(parents)
-            self.population = self.create_new_population(distribution, scores)
+            length_proba = self.estimate_length_distribution(parents)
 
-            history.append({"generation": generation,"best_word": current_word,"best_score": current_score,"average_score": moyenne_result})
+            self.population = self.create_new_population(distribution, scores, length_proba)
+
+            history.append({"generation": generation,"best_word": current_word,"best_score": current_score,"average_score": moyenne_result,"diversity": len(set(self.population))})
 
         return best_word, best_score, history

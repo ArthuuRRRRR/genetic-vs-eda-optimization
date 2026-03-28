@@ -49,7 +49,7 @@ for mot in mots:
 # %%
 
 
-population = init_population(20)
+population = init_population(50)
 
 print("Que voulez vous faire ?")
 print("1. Faire une comparaison entre GA et EDA")
@@ -59,7 +59,8 @@ choice = input("Entrez votre choix (1, 2 ou 3) : ")
 
 
 if choice == "1":
-    results_ga = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="one_point")
+    results_ga = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,crossover_type="one_point",etalon=True,elitisme=2,losers=2)
+
     results_eda = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=10,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
     
     plot_convergence(results_ga, results_eda)
@@ -73,44 +74,51 @@ if choice == "1":
     print_summary(results_eda, "EDA")
     print_best_runs(results_eda, "EDA")
 
+
 elif choice == "2":
-        results_ga_1 = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="one_point")
-        results_ga_2 = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="uniform")
-    
-        plot_convergence(results_ga_1, results_ga_2)
-        plot_average_population(results_ga_1, results_ga_2)
-        plot_boxplot(results_ga_1, results_ga_2)
-        plot_sorted_final_scores(results_ga_1, results_ga_2)
+
+    print("\n--- Comparaison crossover ---")
+    results_ga_1 = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,crossover_type="one_point")
+
+    results_ga_2 = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,crossover_type="uniform")
+
+    plot_convergence(results_ga_1, results_ga_2, "one_point", "uniform")
+    plot_average_population(results_ga_1, results_ga_2, "one_point", "uniform")
+    plot_boxplot(results_ga_1, results_ga_2, "one_point", "uniform")
+    plot_sorted_final_scores(results_ga_1, results_ga_2, "one_point", "uniform")
+
+    print("\n--- Effet de l'étalon ---")
+    ga_sans_etalon = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,etalon=False)
+
+    ga_avec_etalon = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,etalon=True)
+
+    plot_convergence(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
+    plot_average_population(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
+    plot_boxplot(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
+    plot_sorted_final_scores(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
+
+
+    print("\n--- Effet des losers ---")
+    ga_sans_losers = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,losers=0)
+
+    ga_avec_losers = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,losers=3)
+
+    plot_convergence(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
+    plot_average_population(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
+    plot_boxplot(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
+    plot_sorted_final_scores(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
+
+
 elif choice == "3":
-        results_eda_1 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=10,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
-        results_eda_2 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=20,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
-    
-        plot_convergence(results_eda_1, results_eda_2)
-        plot_average_population(results_eda_1, results_eda_2)
-        plot_boxplot(results_eda_1, results_eda_2)
-        plot_sorted_final_scores(results_eda_1, results_eda_2)
 
-"""
-scores_population = []
-for mot in population:
-    score = fonction_objective(trigram_model, mot, dictionary_set)
-    scores_population.append((mot, score))
+    print("\n--- Effet du nombre de parents (EDA) ---")
 
-scores_population = sorted(scores_population, key=lambda x: x[1])
+    results_eda_1 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=10,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
 
-results_ga = monte_carlo_ga(n_runs=20,nb_generations=40,population_size=60,mutation_rate_pm=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2,crossover_type="one_point")
+    results_eda_2 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=20,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
 
+    plot_convergence(results_eda_1, results_eda_2, "parents=10", "parents=20")
+    plot_average_population(results_eda_1, results_eda_2, "parents=10", "parents=20")
+    plot_boxplot(results_eda_1, results_eda_2, "parents=10", "parents=20")
+    plot_sorted_final_scores(results_eda_1, results_eda_2, "parents=10", "parents=20")
 
-results_eda = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=10,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
-
-
-plot_convergence(results_ga, results_eda)
-plot_average_population(results_ga, results_eda)
-plot_boxplot(results_ga, results_eda)
-plot_sorted_final_scores(results_ga, results_eda)
-
-print_summary(results_ga, "GA")
-print_best_runs(results_ga, "GA")
-
-print_summary(results_eda, "EDA")
-print_best_runs(results_eda, "EDA")"""

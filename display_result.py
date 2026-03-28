@@ -23,30 +23,6 @@ def compute_mean_avg_curve(results):
 
     return mean_curve
 
-def plot_convergence(results_ga, results_eda):
-    generations = range(len(results_ga[0]["history"]))
-
-    median_ga, q1_ga, q3_ga = compute_median_q1_q3_best_curve(results_ga)
-    median_eda, q1_eda, q3_eda = compute_median_q1_q3_best_curve(results_eda)
-
-    plt.figure(figsize=(12, 6))  
-
-    plt.plot(generations, median_ga, label="GA", linewidth=2)
-    plt.fill_between(generations, q1_ga, q3_ga, alpha=0.2)
-
-    plt.plot(generations, median_eda, label="EDA", linewidth=2)
-    plt.fill_between(generations, q1_eda, q3_eda, alpha=0.2)
-
-    plt.yscale("log")
-
-    plt.xlabel("Génération")
-    plt.ylabel("Meilleur score")
-    plt.title("Convergence des scores")
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.show()
-
 
 def compute_median_q1_q3_best_curve(results):
     nb_generations = len(results[0]["history"])
@@ -63,16 +39,39 @@ def compute_median_q1_q3_best_curve(results):
     return median_curve, q1_curve, q3_curve
 
 
+def plot_convergence(results_1, results_2, label_1="Méthode 1", label_2="Méthode 2"):
+    generations = range(len(results_1[0]["history"]))
 
-def plot_average_population(results_ga, results_eda):
-    avg_ga = compute_mean_avg_curve(results_ga)
-    avg_eda = compute_mean_avg_curve(results_eda)
+    median_1, q1_1, q3_1 = compute_median_q1_q3_best_curve(results_1)
+    median_2, q1_2, q3_2 = compute_median_q1_q3_best_curve(results_2)
 
-    generations = range(len(avg_ga))
+    plt.figure(figsize=(12, 6))
+
+    plt.plot(generations, median_1, label=label_1, linewidth=2)
+    plt.fill_between(generations, q1_1, q3_1, alpha=0.2)
+
+    plt.plot(generations, median_2, label=label_2, linewidth=2)
+    plt.fill_between(generations, q1_2, q3_2, alpha=0.2)
+
+    plt.yscale("log")
+    plt.xlabel("Génération")
+    plt.ylabel("Meilleur score")
+    plt.title("Convergence des scores")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_average_population(results_1, results_2, label_1="Méthode 1", label_2="Méthode 2"):
+    avg_1 = compute_mean_avg_curve(results_1)
+    avg_2 = compute_mean_avg_curve(results_2)
+
+    generations = range(len(avg_1))
 
     plt.figure(figsize=(9, 5))
-    plt.plot(generations, avg_ga, linewidth=2, label="GA")
-    plt.plot(generations, avg_eda, linewidth=2, label="EDA")
+    plt.plot(generations, avg_1, linewidth=2, label=label_1)
+    plt.plot(generations, avg_2, linewidth=2, label=label_2)
 
     plt.yscale("log")
     plt.xlabel("Génération")
@@ -84,14 +83,14 @@ def plot_average_population(results_ga, results_eda):
     plt.show()
 
 
-def plot_boxplot(results_ga, results_eda):
-    ga_final = [run["best_score"] for run in results_ga]
-    eda_final = [run["best_score"] for run in results_eda]
+def plot_boxplot(results_1, results_2, label_1="Méthode 1", label_2="Méthode 2"):
+    final_1 = [run["best_score"] for run in results_1]
+    final_2 = [run["best_score"] for run in results_2]
 
     plt.figure(figsize=(7, 5))
     plt.boxplot(
-        [ga_final, eda_final],
-        labels=["GA", "EDA"],
+        [final_1, final_2],
+        labels=[label_1, label_2],
         patch_artist=True
     )
 
@@ -102,16 +101,16 @@ def plot_boxplot(results_ga, results_eda):
     plt.show()
 
 
-def plot_sorted_final_scores(results_ga, results_eda):
-    ga_final = sorted([run["best_score"] for run in results_ga])
-    eda_final = sorted([run["best_score"] for run in results_eda])
+def plot_sorted_final_scores(results_1, results_2, label_1="Méthode 1", label_2="Méthode 2"):
+    final_1 = sorted([run["best_score"] for run in results_1])
+    final_2 = sorted([run["best_score"] for run in results_2])
 
     plt.figure(figsize=(9, 5))
-    plt.plot(ga_final, marker="o", linewidth=1.5, label="GA")
-    plt.plot(eda_final, marker="o", linewidth=1.5, label="EDA")
+    plt.plot(final_1, marker="o", linewidth=1.5, label=label_1)
+    plt.plot(final_2, marker="o", linewidth=1.5, label=label_2)
 
     plt.xlabel("Run trié")
-    plt.ylabel("Best score final")
+    plt.ylabel("Meilleur score final")
     plt.title("Scores finaux triés par run")
     plt.grid(True, alpha=0.3)
     plt.legend()
@@ -140,4 +139,3 @@ def print_best_runs(results, algo_name="GA", top_n=3):
             f"{i}. seed={run['seed']} | "
             f"best_word={run['best_word']} | "
             f"best_score={run['best_score']}")
-
