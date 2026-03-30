@@ -139,3 +139,29 @@ def print_best_runs(results, algo_name="GA", top_n=3):
             f"{i}. seed={run['seed']} | "
             f"best_word={run['best_word']} | "
             f"best_score={run['best_score']}")
+
+
+def plot_diversity(results_1, results_2, label_1="Méthode 1", label_2="Méthode 2"):
+    generations = range(len(results_1[0]["history"]))
+
+    div_1 = []
+    div_2 = []
+
+    for g in generations:
+        d1 = [run["history"][g]["diversity"] for run in results_1]
+        d2 = [run["history"][g]["diversity"] for run in results_2]
+
+        div_1.append(np.mean(d1))
+        div_2.append(np.mean(d2))
+
+    plt.figure(figsize=(9, 5))
+    plt.plot(generations, div_1, linewidth=2, label=label_1)
+    plt.plot(generations, div_2, linewidth=2, label=label_2)
+
+    plt.xlabel("Génération")
+    plt.ylabel("Diversité (nb mots uniques)")
+    plt.title("Évolution de la diversité")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()

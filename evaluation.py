@@ -4,19 +4,19 @@ def fonction_objective(trigram_model, word, dictionary, limite_size =16, minimum
     alphabet = "abcdefghijklmnopqrstuvwxyz"
     penalty = 0.0
     if word in dictionary:
-        penalty = penalty + 10000
+        penalty = penalty + 150
     
     if len(word) > limite_size:
-        penalty = penalty + 10000
+        penalty = penalty + 20 * (len(word) - limite_size)
     
     if len(word) < minimum_size:
-        penalty = penalty + 10000
+        penalty = penalty + 20 * (minimum_size - len(word))
     
     if repetition_word(word):
-        penalty = penalty + 10000
+        penalty = penalty + 150
     
     if any(char not in alphabet for char in word):
-        penalty = penalty + 10000
+        penalty = penalty + 150
     
     return perplexité(word, trigram_model) + penalty
 
