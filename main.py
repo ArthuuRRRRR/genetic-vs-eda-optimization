@@ -15,7 +15,7 @@ from population import init_population
 from ga import ga
 from eda import eda
 from run_monte_carlo import monte_carlo_ga, monte_carlo_eda, run_ga_simple, run_eda_simple
-from display_result import plot_convergence, plot_average_population, plot_boxplot, print_summary, print_best_runs, plot_sorted_final_scores, plot_diversity
+from display_result import plot_convergence, plot_average_population, plot_violin, print_summary, print_best_runs, plot_sorted_final_scores, plot_diversity
 from annexe_words import generate_annexe
 
 #%%
@@ -67,7 +67,7 @@ if choice == "1":
     
     plot_convergence(results_ga, results_eda, "GA", "EDA")
     plot_average_population(results_ga, results_eda, "GA", "EDA")
-    plot_boxplot(results_ga, results_eda, "GA", "EDA")
+    plot_violin(results_ga, results_eda, "GA", "EDA")
     plot_sorted_final_scores(results_ga, results_eda, "GA", "EDA")
     plot_diversity(results_ga, results_eda, "GA", "EDA")
 
@@ -87,7 +87,7 @@ elif choice == "2":
 
     plot_convergence(results_ga_1, results_ga_2, "one_point", "uniform")
     plot_average_population(results_ga_1, results_ga_2, "one_point", "uniform")
-    plot_boxplot(results_ga_1, results_ga_2, "one_point", "uniform")
+    plot_violin(results_ga_1, results_ga_2, "one_point", "uniform")
     plot_sorted_final_scores(results_ga_1, results_ga_2, "one_point", "uniform")
     plot_diversity(results_ga_1, results_ga_2, "one_point", "uniform")
 
@@ -98,7 +98,7 @@ elif choice == "2":
 
     plot_convergence(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
     plot_average_population(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
-    plot_boxplot(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
+    plot_violin(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
     plot_sorted_final_scores(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
     plot_diversity(ga_sans_etalon, ga_avec_etalon, "sans étalon", "avec étalon")
 
@@ -110,7 +110,7 @@ elif choice == "2":
 
     plot_convergence(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
     plot_average_population(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
-    plot_boxplot(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
+    plot_violin(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
     plot_sorted_final_scores(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
     plot_diversity(ga_sans_losers, ga_avec_losers, "sans losers", "avec losers")
 
@@ -125,9 +125,23 @@ elif choice == "3":
 
     plot_convergence(results_eda_1, results_eda_2, "parents=10", "parents=20")
     plot_average_population(results_eda_1, results_eda_2, "parents=10", "parents=20")
-    plot_boxplot(results_eda_1, results_eda_2, "parents=10", "parents=20")
+    plot_violin(results_eda_1, results_eda_2, "parents=10", "parents=20")
     plot_sorted_final_scores(results_eda_1, results_eda_2, "parents=10", "parents=20")
     plot_diversity(results_eda_1, results_eda_2, "parents=10", "parents=20")
+
+
+    print("\n--- Effet du choix des individus (EDA) ---")
+
+    results_eda_3 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=20,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
+
+    results_eda_4 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=20,population_size=60,mutation_rate=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=10)
+
+    plot_convergence(results_eda_3, results_eda_4, "choix_indiv=2", "choix_indiv=10")
+    plot_average_population(results_eda_3, results_eda_4, "choix_indiv=2", "choix_indiv=10")
+    plot_violin(results_eda_3, results_eda_4, "choix_indiv=2", "choix_indiv=10")
+    plot_sorted_final_scores(results_eda_3, results_eda_4, "choix_indiv=2", "choix_indiv=10")
+    plot_diversity(results_eda_3, results_eda_4, "choix_indiv=2", "choix_indiv=10")
+                            
 
 elif choice == "4":
 

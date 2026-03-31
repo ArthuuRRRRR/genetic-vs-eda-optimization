@@ -83,20 +83,30 @@ def plot_average_population(results_1, results_2, label_1="Méthode 1", label_2=
     plt.show()
 
 
-def plot_boxplot(results_1, results_2, label_1="Méthode 1", label_2="Méthode 2"):
+def plot_violin(results_1, results_2, label_1="Méthode 1", label_2="Méthode 2"):
     final_1 = [run["best_score"] for run in results_1]
     final_2 = [run["best_score"] for run in results_2]
 
     plt.figure(figsize=(7, 5))
-    plt.boxplot(
+
+    test = plt.violinplot(
         [final_1, final_2],
-        labels=[label_1, label_2],
-        patch_artist=True
-    )
+        showmeans=True,
+        )
+
+    couleurs = ["lightblue", "lightgreen"]
+
+    for i, t in enumerate(test["bodies"]):
+        t.set_facecolor(couleurs[i])
+        t.set_edgecolor("black")
+        t.set_alpha(0.7)
+
+    plt.xticks([1, 2], [label_1, label_2])
 
     plt.ylabel("Meilleur score final")
     plt.title("Distribution des scores finaux")
     plt.grid(True, alpha=0.3)
+
     plt.tight_layout()
     plt.show()
 
