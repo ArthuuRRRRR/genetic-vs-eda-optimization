@@ -5,9 +5,9 @@ import random
 
 class eda:
 
-    def __init__(self, population_size, mutation_rate, trigram_model, dictionary_set, choice_indiv):
+    def __init__(self, population_size, perturbation_aleatoire, trigram_model, dictionary_set, choice_indiv):
         self.population_size = population_size
-        self.mutation_rate = mutation_rate
+        self.perturbation_aleatoire = perturbation_aleatoire
         self.trigram_model = trigram_model
         self.dictionary_set = dictionary_set
         self.population = init_population(population_size)
@@ -34,6 +34,7 @@ class eda:
             return distribution
 
         taille_mot = max(len(mot) for mot in parents)
+        #valeur_lissage_test = 0.05
 
         for i in range(taille_mot):
             compt = {}
@@ -41,7 +42,7 @@ class eda:
             for letter in self.alphabet:
                 compt[letter] = 1
 
-            total = len(self.alphabet)
+            total =  len(self.alphabet)
 
             for mot in parents:
                 if i < len(mot):
@@ -97,7 +98,7 @@ class eda:
             else:
                 letter = random.choice(self.alphabet)
 
-            if random.random() < self.mutation_rate:
+            if random.random() < self.perturbation_aleatoire:
                 letter = random.choice(self.alphabet)
 
             mot_temp += letter
