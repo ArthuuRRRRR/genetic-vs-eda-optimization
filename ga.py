@@ -4,6 +4,21 @@ import random
 
 
 class ga:
+    """
+    Cette classe fait évoluer une population de chaînes de caractères en utilisant
+    sélection, croisement et mutation, afin de minimiser une fonction objective
+    basée sur un modèle de trigrammes et un dictionnaire.
+
+    Paramètres principaux :
+    - population_size : taille de la population
+    - mutation_rate_pm : probabilité de mutation
+    - crossover_rate_pc : probabilité de croisement
+    - elitisme : nombre de meilleurs individus conservés
+    - reseed : réinjection aléatoire pour maintenir la diversité
+    - etalon : favorise le meilleur individu comme parent
+    - losers : conserve certains individus faibles pour la diversité
+    - crossover_type : type de croisement ("one_point" ou "uniform")
+    """
     def __init__(self,population_size,mutation_rate_pm,trigram_model,dictionary_set,choice_indiv=2,crossover_type='one_point',min_length=4,max_length=16,crossover_rate_pc=0.8,reseed=2,elitisme=2,etalon=False,losers=0):
         self.population_size = population_size
         self.mutation_rate_pm = mutation_rate_pm
@@ -23,17 +38,17 @@ class ga:
         self.etalon = etalon
         self.losers = losers
     
-    def evaluate_population(self):
+    def evaluate_population(self): # je calcule le score de chaque individu et je retourne une liste triée (mot, score)
         results = []
         for mot in self.population:
             result = fonction_objective(self.trigram_model, mot, self.dictionary_set)
             results.append((mot, result))
         return sorted(results, key=lambda x: x[1])
 
-    def parent_selection(self, scores, nombre_prts):
+    def parent_selection(self, scores, nombre_prts): # sélectionne les meilleurs individus selon leur score
         return [mot for mot, _ in scores[:nombre_prts]]
 
-    def crossover_one_point(self, parent1, parent2):
+    def crossover_one_point(self, parent1, parent2):   # réalise un croisement à un point entre deux parents pour générer deux enfants
         if len(parent1) < 2 or len(parent2) < 2:
             return parent1, parent2
 
@@ -44,7 +59,7 @@ class ga:
         child2 = parent2[:stop2] + parent1[stop1:]
         return child1, child2
     
-    def crossover_uniform(self, parent1, parent2):
+    def crossover_uniform(self, parent1, parent2):  # réalise un croisement uniforme entre deux parents pour générer deux enfants
         minim = min(len(parent1), len(parent2))
         
         child1 = []
@@ -63,17 +78,17 @@ class ga:
             child2.extend(parent2[minim:])
         return ''.join(child1), ''.join(child2)
     
-    def crossover(self, parent1, parent2):
+    def crossover(self, parent1, parent2): #choix du type de croisement à appliquer
         if self.crossover_type == "uniform":
             return self.crossover_uniform(parent1, parent2)
         else:
             return self.crossover_one_point(parent1, parent2)
 
-    def mutation(self, word):
+    def mutation(self, word): # je fais une mutation aléatoire sur un mot donné en fonction de la probabilité de mutation
         if random.random() >= self.mutation_rate_pm:
             return word
 
-        operation = random.choice(["replace", "insert", "delete"])
+        operation = random.choice(["replace", "insert", "delete"]) #type de mutation : remplacement, insertion ou suppression d'une lettre
 
         if operation == "replace" and len(word) > 0:
             i = random.randint(0, len(word) - 1)
@@ -91,7 +106,7 @@ class ga:
 
         return word
     
-    def run(self, nb_generations):
+    def run(self, nb_generations): # fais évoluer la population sur plusieurs générations 
         best_word = None
         best_score = float("inf")
         history = []
