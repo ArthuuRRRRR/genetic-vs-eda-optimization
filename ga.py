@@ -95,9 +95,11 @@ class ga:
         best_word = None
         best_score = float("inf")
         history = []
+        compteur_fonction_objective = 0
 
         for generation in range(nb_generations):
             results = self.evaluate_population()
+            compteur_fonction_objective += len(self.population)
 
             current_word = results[0][0]
             current_score = results[0][1]
@@ -155,4 +157,4 @@ class ga:
 
             history.append({"generation": generation,"best_word": current_word,"best_score": current_score,"average_score": moyenne_result,"diversity": len(set(self.population))})
 
-        return best_word, best_score, history
+        return best_word, best_score, history , compteur_fonction_objective

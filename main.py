@@ -50,7 +50,7 @@ for mot in mots:
 # %%
 
 
-population = init_population(50)
+population = init_population(60)
 
 print("Que voulez vous faire ?")
 print("1. Faire une comparaison entre GA et EDA")
@@ -77,6 +77,9 @@ if choice == "1":
     
     print_summary(results_eda, "EDA")
     print_best_runs(results_eda, "EDA")
+
+    print("nombre de evaluations de la fonction objectif pour EDA : ", sum(r["compteur_fonction_objective"] for r in results_eda))
+    print("nombre de evaluations de la fonction objectif pour GA : ", sum(r["compteur_fonction_objective"] for r in results_ga))
 
 
 elif choice == "2":
@@ -148,17 +151,17 @@ elif choice == "3":
 
     results_eda_1 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=10,population_size=60,perturbation_aleatoire=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
 
-    results_eda_2 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=100,population_size=60,perturbation_aleatoire=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
+    results_eda_2 = monte_carlo_eda(n_runs=20,nb_generations=40,nombre_prts=20,population_size=60,perturbation_aleatoire=0.2,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=2)
 
-    plot_convergence(results_eda_1, results_eda_2, "parents=10", "parents=100")
-    plot_average_population(results_eda_1, results_eda_2, "parents=10", "parents=100")
-    plot_violin(results_eda_1, results_eda_2, "parents=10", "parents=100")
-    plot_sorted_final_scores(results_eda_1, results_eda_2, "parents=10", "parents=100")
-    plot_diversity(results_eda_1, results_eda_2, "parents=10", "parents=100")
+    plot_convergence(results_eda_1, results_eda_2, "parents=10", "parents=20")
+    plot_average_population(results_eda_1, results_eda_2, "parents=10", "parents=20")
+    plot_violin(results_eda_1, results_eda_2, "parents=10", "parents=20")
+    plot_sorted_final_scores(results_eda_1, results_eda_2, "parents=10", "parents=20")
+    plot_diversity(results_eda_1, results_eda_2, "parents=10", "parents=20")
     print_summary(results_eda_1, "parents=10")
     print_best_runs(results_eda_1, "parents=10")
-    print_summary(results_eda_2, "parents=100")
-    print_best_runs(results_eda_2, "parents=100")
+    print_summary(results_eda_2, "parents=20")
+    print_best_runs(results_eda_2, "parents=20")
 
 
     print("\n--- Effet du choix des individus (EDA) ---")
@@ -207,6 +210,7 @@ elif choice == "4":
 
 elif choice == "5":
     print("\n--- Runs avec paramètres entrés manuellement ---")
+    nbr_population = int(input("Entrez la taille de la population : "))
     seed = int(input("Entrez la seed : "))
     nb_generations = int(input("Entrez le nombre de générations : "))
     population_size = int(input("Entrez la taille de la population : "))
@@ -214,6 +218,8 @@ elif choice == "5":
     perturbation_aleatoire = float(input("Entrez le taux de perturbation pour la robustesse(pour EDA) : "))
     nombre_prts = int(input("Entrez le nombre de parents (pour EDA) : "))
     choice_indiv = int(input("Entrez le choix des individus (pour EDA) : "))    
+
+    population = init_population(nbr_population)
 
     result_ga = run_ga_simple(seed=seed,nb_generations=nb_generations,population_size=population_size,mutation_rate_pm=mutation_rate_pm,trigram_model=trigram_model,dictionary_set=dictionary_set,crossover_type="one_point",etalon=True,elitisme=2, losers=0, reseed=2)
     result_eda = run_eda_simple(seed=seed,nb_generations=nb_generations,nombre_prts=nombre_prts,population_size=population_size,perturbation_aleatoire=perturbation_aleatoire,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=choice_indiv)

@@ -13,9 +13,9 @@ def run_ga_simple(seed,nb_generations,population_size,mutation_rate_pm,trigram_m
 
     result = ga_model.run(nb_generations)
 
-    best_word, best_score, history = result
+    best_word, best_score, history, compteur_fonction_objective = result
 
-    return {"seed": seed,"best_word": best_word,"best_score": best_score,"history": history}
+    return {"seed": seed,"best_word": best_word,"best_score": best_score,"history": history,"compteur_fonction_objective": compteur_fonction_objective}
 
 
 def run_eda_simple(seed,nb_generations,nombre_prts,population_size,perturbation_aleatoire, trigram_model,dictionary_set,choice_indiv):
@@ -26,9 +26,9 @@ def run_eda_simple(seed,nb_generations,nombre_prts,population_size,perturbation_
 
     result = eda_model.run(nb_generations, nombre_prts)
 
-    best_word, best_score, history = result
+    best_word, best_score, history, compteur_fonction_objective = result
 
-    return {"seed": seed,"best_word": best_word,"best_score": best_score,"history": history}
+    return {"seed": seed,"best_word": best_word,"best_score": best_score,"history": history,"compteur_fonction_objective": compteur_fonction_objective}
 
 
 
@@ -48,5 +48,4 @@ def monte_carlo_eda(n_runs,nb_generations,nombre_prts,population_size,perturbati
     for seed in range(n_runs):
         result = run_eda_simple(seed=seed,nb_generations=nb_generations,nombre_prts=nombre_prts,population_size=population_size,perturbation_aleatoire=perturbation_aleatoire,trigram_model=trigram_model,dictionary_set=dictionary_set,choice_indiv=choice_indiv)
         all_results.append(result)
-
     return all_results
